@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { analyzeAnswer } from '../services/geminiService';
+import { evaluateAnswer } from '../services/geminiService';
 
 const GradingForm: React.FC = () => {
   const [question, setQuestion] = useState('');
@@ -10,9 +10,14 @@ const GradingForm: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await analyzeAnswer(question, desiredAnswer, studentAnswer);
-    setGrade(result.grade);
-    setAnalysis(result.analysis);
+    try {
+      const result = await evaluateAnswer(question, desiredAnswer, studentAnswer);
+      setGrade(result.grade);
+      setAnalysis(result.analysis);
+    } catch (error) {
+      console.error("Error evaluating answer:", error);
+      setAnalysis("An error occurred while evaluating the answer.");
+    }
   };
 
   return (
